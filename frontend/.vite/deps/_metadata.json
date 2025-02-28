@@ -1,0 +1,46 @@
+{
+  "hash": "6d7b9d98",
+  "configHash": "560b0f48",
+  "lockfileHash": "35c1b6c0",
+  "browserHash": "a7b7b90e",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "e86afe05",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "3eb1293c",
+      "needsInterop": true
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.js",
+      "file": "react-router-dom.js",
+      "fileHash": "ba795b82",
+      "needsInterop": false
+    },
+    "framer-motion": {
+      "src": "../../node_modules/framer-motion/dist/es/index.mjs",
+      "file": "framer-motion.js",
+      "fileHash": "5aa446a9",
+      "needsInterop": false
+    },
+    "recharts": {
+      "src": "../../node_modules/recharts/es6/index.js",
+      "file": "recharts.js",
+      "fileHash": "c11e063a",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-6IW3YP4A": {
+      "file": "chunk-6IW3YP4A.js"
+    },
+    "chunk-N3BBKUNS": {
+      "file": "chunk-N3BBKUNS.js"
+    }
+  }
+}
