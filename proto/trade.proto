@@ -1,6 +1,8 @@
 syntax = "proto3";
 
-package trade;
+package trade; 
+
+option go_package = "./proto;trade";
 
 service MatchingEngine {
     rpc PlaceOrder (OrderRequest) returns (OrderResponse);
