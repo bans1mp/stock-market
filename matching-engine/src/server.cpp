@@ -3,6 +3,7 @@
 #include <string>
 #include <grpcpp/grpcpp.h>
 #include "../proto/trade.grpc.pb.h"  // Include gRPC generated headers
+#include <hiredis/hiredis.h>
 
 using namespace std ;
 using grpc::Server;
@@ -44,7 +45,20 @@ void RunServer() {
     server->Wait();
 }
 
+redisContext* connectRedis() {
+    redisContext* redis = redisConnect("127.0.0.1", 6379);
+    if(redis == NULL || redis->err) {
+        cerr<<"Redis connection error!\n"<<redis->err<<"\n" ;
+        return NULL ;
+    }
+    return redis ;
+}
+
 int main() {
+    redisContext* conn = connectRedis();
+    if(conn) {
+        cout<<"Connection successful\n" ;
+    }
     RunServer();
     return 0;
 }
