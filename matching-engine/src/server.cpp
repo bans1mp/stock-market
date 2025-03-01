@@ -1,37 +1,36 @@
+#include "server.h"
+#include "order_book.h"
 #include <iostream>
-#include <memory>
-#include <string>
-#include <grpcpp/grpcpp.h>
-#include "../proto/trade.grpc.pb.h"  // Include gRPC generated headers
-#include <hiredis/hiredis.h>
 
-using namespace std ;
+using namespace std;
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
-using trade::OrderRequest;
-using trade::OrderResponse;
-using trade::MatchingEngine;
 
-// Implement the MatchingEngine gRPC service
-class MatchingEngineImpl final : public MatchingEngine::Service {
-public:
-    Status PlaceOrder(ServerContext* context, const OrderRequest* request, OrderResponse* response) override {
-        cout << "Received order from user: " << request->user_id() << endl;
-        cout << "Order type: " << request->order_type() << ", Quantity: " << request->quantity() << endl;
+Status MatchingEngineImpl::PlaceOrder(ServerContext* context, const trade::OrderRequest* request, trade::OrderResponse* response) {
+    cout << "Received order from user: " << request->user_id() << endl;
+    cout << "Order type: " << request->order_type() << ", Quantity: " << request->quantity() << endl;
 
-        // process order here
-
-        response->set_message("Order Placed");
-        response->set_success(true);
-
-        cout << "Order processed\n";
-        return Status::OK;
+    string orderType = request->order_type();
+    
+    if (orderType == "BUY") {
+        executeBuyOrder(request->price(), request->quantity());
+    } 
+    else if (orderType == "SELL") {
+        executeSellOrder(request->price(), request->quantity());
+    } 
+    else {
+        response->set_message("Invalid Order type");
+        response->set_success(false);
     }
-};
 
-// Start the gRPC server
+    response->set_message("Order Placed");
+    response->set_success(true);
+
+    return Status::OK;
+}
+
 void RunServer() {
     string server_address("0.0.0.0:50051");
     MatchingEngineImpl service;
@@ -45,20 +44,8 @@ void RunServer() {
     server->Wait();
 }
 
-redisContext* connectRedis() {
-    redisContext* redis = redisConnect("127.0.0.1", 6379);
-    if(redis == NULL || redis->err) {
-        cerr<<"Redis connection error!\n"<<redis->err<<"\n" ;
-        return NULL ;
-    }
-    return redis ;
-}
-
-int main() {
-    redisContext* conn = connectRedis();
-    if(conn) {
-        cout<<"Connection successful\n" ;
-    }
-    RunServer();
-    return 0;
-}
+// need to maintain the order book
+// for buy orders store sorted set with {x,x} 
+// whenever a sell order comes with cost y, check for least x >= y and get that value from the set, check in the map of that value to find another sorted set
+// sorted on the basis of time, keep subtracting till you get required condition
+// similarly with sell orders
