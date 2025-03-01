@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package trade; 
+
+option go_package = "./proto;trade";
+
+service MatchingEngine {
+    rpc PlaceOrder (OrderRequest) returns (OrderResponse);
+}
+
+service Backend {
+    rpc ExecuteTrade (TradeRequest) returns (TradeResponse);
+}
+
+message OrderRequest {
+  int32 user_id = 1;
+  string symbol = 2;
+  double price = 3;
+  int32 quantity = 4;
+  string order_type = 5; 
+}
+
+message OrderResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message TradeRequest {
+  int32 buyer_id = 1;
+  int32 seller_id = 2;
+  string symbol = 3;
+  double price = 4;
+  int32 quantity = 5;
+}
+
+message TradeResponse {
+  bool success = 1;
+  string message = 2;
+}
