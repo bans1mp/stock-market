@@ -5,15 +5,67 @@
 
 using namespace std;
 
-void executeBuyOrder(int price, int quantity, int userID, string symbol) {
-    cout << "Processing Buy Order: Price = " << price << ", Quantity = " << quantity << endl;
+void executeBuyOrder(int buyPrice, int quantity, int userID, string symbol) {
+    cout << "Processing Buy Order: Price = " << buyPrice << ", Quantity = " << quantity << endl;
 
     string redisKey = "sell_orders_" + symbol;
-    string value = userID + ":" + to_string(quantity) ;
+    string value = userID + "_" + to_string(quantity) ; // add timestamp
 
     redisContext* conn = connectRedis();
+    if (conn == NULL || conn->err) {
+        printf("Connection error: %s\n", conn ? conn->errstr : "NULL context");
+        return ;
+    }
+    // can break into class
 
-    // iterate from smallert
+    int reqQuantity = quantity ;
+
+    while(reqQuantity > 0) {
+        redisReply* reply = (redisReply*)redisCommand(conn, "ZRANGE %s 0 0 WITHSCORES", redisKey);
+        if(reply == NULL || reply -> type != REDIS_REPLY_ARRAY) {
+            printf("An error occured\n");
+            break ;
+        }
+
+        if (reply->elements == 0){
+            break ;
+        }
+
+        char* order = reply->element[0]->str;
+        int price = atoi(reply->element[1]->str);
+
+        if (price > buyPrice){
+            break ;
+        }
+
+        char sellerUserID[50];
+        int availableQuantity;
+        long timestamp ;
+        sscanf(order, "%[^_]_%d_%ld", userID, &availableQuantity, &timestamp);
+
+        if (availableQuantity > reqQuantity) {
+            int remainingQuantity = availableQuantity-reqQuantity;
+            char new_order[100];
+            snprintf(new_order, sizeof(new_order), "%s_%d_%ld", userID, remainingQuantity, timestamp);
+            // send order via protobuf to golang for processing SQL
+
+            redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", redisKey, order);
+            redisReply *addReply = (redisReply *)redisCommand(conn, "ZADD %s %d %s", redisKey, price, new_order);
+
+            reqQuantity = 0 ;
+        } else {
+            // send order via protobuf to golang for processing SQL
+            redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", redisKey, order);
+            reqQuantity -= availableQuantity ;
+        }
+
+    }
+
+    if(reqQuantity > 0){
+        // add the rest of the order to the buy order book
+    }
+
+    return;
 
 }
 
