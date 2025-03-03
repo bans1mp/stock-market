@@ -33,12 +33,14 @@ func main() {
 	req := &trade.OrderRequest{
 		UserId: 1,
 		Symbol: "AAPL",
-		Price: 200,
-		Quantity: 10,
-		OrderType: "BUY",
+		Price: 170,
+		Quantity: 11,
+		OrderType: "SELL",
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	// check buy and sell id different
+
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 
 	res, err := client.PlaceOrder(ctx, req)

@@ -43,9 +43,3 @@ void RunServer() {
     cout << "Matching Engine Server listening on " << server_address << endl;
     server->Wait();
 }
-
-// need to maintain the order book
-// for buy orders store sorted set with {x,x} 
-// whenever a sell order comes with cost y, check for least x >= y and get that value from the set, check in the map of that value to find another sorted set
-// sorted on the basis of time, keep subtracting till you get required condition
-// similarly with sell orders
