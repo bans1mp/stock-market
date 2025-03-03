@@ -2,14 +2,18 @@
 #include "redis.h"
 #include <hiredis/hiredis.h>
 #include <iostream>
+#include <chrono>
 
 using namespace std;
 
 void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
     cout << "Processing Buy Order: Price = " << buyPrice << ", Quantity = " << quantity << endl;
 
+    auto now = chrono::system_clock::now();
+    auto epoch = chrono::duration_cast<chrono::seconds>(now.time_since_epoch()).count();
+
     string redisKey = "sell_orders_" + symbol;
-    string value = userID + "_" + to_string(quantity) ; // add timestamp
+    string value = userID + "_" + to_string(quantity) + '_' + to_string(epoch); // add timestamp
 
     redisContext* conn = connectRedis();
     if (conn == NULL || conn->err) {
