@@ -2,11 +2,16 @@
 #define REDIS_H
 
 #include <hiredis/hiredis.h>
-#include <string>
 
-using namespace std ;
+class RedisClient {
+private:
+    redisContext* conn;
+    RedisClient();  // Private constructor for Singleton pattern
 
-// Connect to Redis
-redisContext* connectRedis();
+public:
+    static RedisClient& getInstance();  // Returns the single instance
+    redisContext* getConnection();  // Gets the Redis connection
+    ~RedisClient();
+};
 
 #endif // REDIS_H

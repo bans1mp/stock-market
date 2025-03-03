@@ -15,10 +15,10 @@ Status MatchingEngineImpl::PlaceOrder(ServerContext* context, const trade::Order
     string orderType = request->order_type();
     
     if (orderType == "BUY") {
-        executeBuyOrder(request->price(), request->quantity());
+        executeBuyOrder(request->price(), request->quantity(), request->user_id(), request->symbol());
     } 
     else if (orderType == "SELL") {
-        executeSellOrder(request->price(), request->quantity());
+        executeSellOrder(request->price(), request->quantity(), request->user_id(), request->symbol());
     } 
     else {
         response->set_message("Invalid Order type");
@@ -43,9 +43,3 @@ void RunServer() {
     cout << "Matching Engine Server listening on " << server_address << endl;
     server->Wait();
 }
-
-// need to maintain the order book
-// for buy orders store sorted set with {x,x} 
-// whenever a sell order comes with cost y, check for least x >= y and get that value from the set, check in the map of that value to find another sorted set
-// sorted on the basis of time, keep subtracting till you get required condition
-// similarly with sell orders
