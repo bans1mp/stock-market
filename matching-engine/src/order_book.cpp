@@ -12,8 +12,9 @@ void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
     auto now = chrono::system_clock::now();
     auto epoch = chrono::duration_cast<chrono::seconds>(now.time_since_epoch()).count();
 
-    string redisKey = "sell_orders_" + symbol;
-    string value = userID + "_" + to_string(quantity) + '_' + to_string(epoch); // add timestamp
+    string sellRedisKey = "sell_orders_" + symbol;
+    string buyRedisKey = "buy_orders_" + symbol;
+    string value = userID + "_" + to_string(quantity) + '_' + to_string(epoch); 
 
     redisContext* conn = connectRedis();
     if (conn == NULL || conn->err) {
@@ -25,7 +26,7 @@ void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
     int reqQuantity = quantity ;
 
     while(reqQuantity > 0) {
-        redisReply* reply = (redisReply*)redisCommand(conn, "ZRANGE %s 0 0 WITHSCORES", redisKey);
+        redisReply* reply = (redisReply*)redisCommand(conn, "ZRANGE %s 0 0 WITHSCORES", sellRedisKey);
         if(reply == NULL || reply -> type != REDIS_REPLY_ARRAY) {
             printf("An error occured\n");
             break ;
@@ -53,52 +54,90 @@ void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
             snprintf(new_order, sizeof(new_order), "%d_%d_%ld", userID, remainingQuantity, timestamp);
             // send order via protobuf to golang for processing SQL
 
-            redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", redisKey, order);
-            redisReply *addReply = (redisReply *)redisCommand(conn, "ZADD %s %d %s", redisKey, price, new_order);
+            redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", sellRedisKey, order);
+            redisReply *addReply = (redisReply *)redisCommand(conn, "ZADD %s %d %s", sellRedisKey, price, new_order);
 
             reqQuantity = 0 ;
         } else {
             // send order via protobuf to golang for processing SQL
-            redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", redisKey, order);
+            redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", sellRedisKey, order);
             reqQuantity -= availableQuantity ;
         }
 
     }
 
     if(reqQuantity > 0){
-        // add the rest of the order to the buy order book
+        char new_buy_order[100];
+        snprintf(new_buy_order, sizeof(new_buy_order), "%d_%d_%ld", userID, reqQuantity, epoch);
+        redisReply* addReply = (redisReply*)redisCommand(conn, "ZADD %s %f %s", buyRedisKey.c_str(), buyPrice, new_buy_order);
     }
 
     return;
 
 }
 
-// void executeSellOrder(int price, int quantity) {
-//     cout << "Processing Sell Order: Price = " << price << ", Quantity = " << quantity << endl;
+void executeSellOrder(double sellPrice, int quantity, int userID, string symbol) {
+    cout << "Processing Sell Order: Price = " << sellPrice << ", Quantity = " << quantity << endl;
 
-//     // Try to find a buy order that satisfies the sell order
-//     auto it = buyOrders.lower_bound(price);
-//     while (it != buyOrders.begin() && quantity > 0) {
-//         --it;
-//         int buyPrice = it->first;
-//         set<int>& buyTimes = it->second;
+    auto now = chrono::system_clock::now();
+    auto epoch = chrono::duration_cast<chrono::seconds>(now.time_since_epoch()).count();
 
-//         if (!buyTimes.empty()) {
-//             // Remove the earliest placed order
-//             buyTimes.erase(buyTimes.begin());
-//             quantity--;
-//             cout << "Matched with Buy Order at " << buyPrice << endl;
-//         }
+    string sellRedisKey = "sell_orders_" + symbol;
+    string buyRedisKey = "buy_orders_" + symbol;
+    string value = to_string(userID) + "_" + to_string(quantity) + '_' + to_string(epoch); 
 
-//         // Remove price level if no orders left
-//         if (buyTimes.empty()) {
-//             it = buyOrders.erase(it);
-//         }
-//     }
+    redisContext* conn = connectRedis();
+    if (conn == NULL || conn->err) {
+        printf("Connection error: %s\n", conn ? conn->errstr : "NULL context");
+        return;
+    }
 
-//     // If there's still remaining quantity, add to sellOrders
-//     if (quantity > 0) {
-//         sellOrders[price].insert(time(nullptr));
-//         cout << "Added remaining sell order to book at " << price << endl;
-//     }
-// }
+    int reqQuantity = quantity;
+
+    while (reqQuantity > 0) {
+        redisReply* reply = (redisReply*)redisCommand(conn, "ZREVRANGE %s 0 0 WITHSCORES", buyRedisKey.c_str());
+        if (reply == NULL || reply->type != REDIS_REPLY_ARRAY) {
+            printf("An error occurred\n");
+            break;
+        }
+
+        if (reply->elements == 0) {
+            break;
+        }
+
+        char* order = reply->element[0]->str;
+        double price = atof(reply->element[1]->str);
+
+        if (price < sellPrice) {
+            break;
+        }
+
+        int buyerUserID, availableQuantity;
+        long timestamp;
+        sscanf(order, "%d_%d_%ld", &buyerUserID, &availableQuantity, &timestamp);
+
+        if (availableQuantity > reqQuantity) {
+            int remainingQuantity = availableQuantity - reqQuantity;
+            char new_order[100];
+            snprintf(new_order, sizeof(new_order), "%d_%d_%ld", buyerUserID, remainingQuantity, timestamp);
+            // send order via protobuf to golang for processing SQL
+
+            redisReply* delReply = (redisReply*)redisCommand(conn, "ZREM %s %s", buyRedisKey.c_str(), order);
+            redisReply* addReply = (redisReply*)redisCommand(conn, "ZADD %s %f %s", buyRedisKey.c_str(), price, new_order);
+
+            reqQuantity = 0;
+        } else {
+            // send order via protobuf to golang for processing SQL
+            redisReply* delReply = (redisReply*)redisCommand(conn, "ZREM %s %s", buyRedisKey.c_str(), order);
+            reqQuantity -= availableQuantity;
+        }
+    }
+
+    if (reqQuantity > 0) {
+        char new_sell_order[100];
+        snprintf(new_sell_order, sizeof(new_sell_order), "%d_%d_%ld", userID, reqQuantity, epoch);
+        redisReply* addReply = (redisReply*)redisCommand(conn, "ZADD %s %f %s", sellRedisKey.c_str(), sellPrice, new_sell_order);
+    }
+
+    return;
+}
