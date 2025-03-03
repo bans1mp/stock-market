@@ -18,7 +18,7 @@ Status MatchingEngineImpl::PlaceOrder(ServerContext* context, const trade::Order
         executeBuyOrder(request->price(), request->quantity(), request->user_id(), request->symbol());
     } 
     else if (orderType == "SELL") {
-        // executeSellOrder(request->price(), request->quantity());
+        executeSellOrder(request->price(), request->quantity(), request->user_id(), request->symbol());
     } 
     else {
         response->set_message("Invalid Order type");
