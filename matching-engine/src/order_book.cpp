@@ -16,7 +16,7 @@ void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
     string buyRedisKey = "buy_orders_" + symbol;
     string value = userID + "_" + to_string(quantity) + '_' + to_string(epoch); 
 
-    redisContext* conn = connectRedis();
+    redisContext* conn = RedisClient::getInstance().getConnection();
     if (conn == NULL || conn->err) {
         printf("Connection error: %s\n", conn ? conn->errstr : "NULL context");
         return ;
@@ -86,7 +86,7 @@ void executeSellOrder(double sellPrice, int quantity, int userID, string symbol)
     string buyRedisKey = "buy_orders_" + symbol;
     string value = to_string(userID) + "_" + to_string(quantity) + '_' + to_string(epoch); 
 
-    redisContext* conn = connectRedis();
+    redisContext* conn = RedisClient::getInstance().getConnection();
     if (conn == NULL || conn->err) {
         printf("Connection error: %s\n", conn ? conn->errstr : "NULL context");
         return;
