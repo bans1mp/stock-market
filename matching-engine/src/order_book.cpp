@@ -14,16 +14,12 @@ void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
 
     string sellRedisKey = "sell_orders_" + symbol;
     string buyRedisKey = "buy_orders_" + symbol;
-    string value = to_string(epoch) + "_" + to_string(userID) + "_" + to_string(quantity); 
-
-    cout<<value<<"\n";
 
     redisContext* conn = RedisClient::getInstance().getConnection();
     if (conn == NULL || conn->err) {
         printf("Connection error: %s\n", conn ? conn->errstr : "NULL context");
         return ;
     }
-    // can break into class
 
     int reqQuantity = quantity ;
 
@@ -92,8 +88,6 @@ void executeSellOrder(double sellPrice, int quantity, int userID, string symbol)
         printf("Connection error: %s\n", conn ? conn->errstr : "NULL context");
         return;
     }
-
-    // sell on priority basis
 
     int reqQuantity = quantity;
 
