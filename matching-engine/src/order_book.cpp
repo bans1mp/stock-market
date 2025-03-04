@@ -22,6 +22,7 @@ void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
     }
 
     int reqQuantity = quantity ;
+    vector<string> selfOrders ;
 
     while(reqQuantity > 0) {
         redisReply* reply = (redisReply*)redisCommand(conn, "ZRANGE %s 0 0 WITHSCORES", sellRedisKey);
@@ -41,15 +42,22 @@ void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
             break ;
         }
 
-        char sellerUserID[50];
-        int availableQuantity;
+        int availableQuantity, sellerUserID;
         long timestamp ;
-        sscanf(order, "%ld_%d_%d", &timestamp, &userID, &availableQuantity);
+        sscanf(order, "%ld_%d_%d", &timestamp, &sellerUserID, &availableQuantity);
+
+        if(sellerUserID == userID){
+            redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", sellRedisKey, order);
+            stringstream ss;
+            ss << "ZADD " << sellRedisKey << " " << price << " " << order;
+            selfOrders.push_back(ss.str().c_str());
+            continue;
+        }
 
         if (availableQuantity > reqQuantity) {
             int remainingQuantity = availableQuantity-reqQuantity;
             char new_order[100];
-            snprintf(new_order, sizeof(new_order), "%d_%d_%ld", userID, remainingQuantity, timestamp);
+            snprintf(new_order, sizeof(new_order), "%ld_%d_%d", timestamp, userID, remainingQuantity);
             // send order via protobuf to golang for processing SQL
 
             redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", sellRedisKey, order);
@@ -68,6 +76,10 @@ void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
         char new_buy_order[100];
         snprintf(new_buy_order, sizeof(new_buy_order), "%ld_%d_%d", epoch, userID, reqQuantity);
         redisReply* addReply = (redisReply*)redisCommand(conn, "ZADD %s %f %s", buyRedisKey.c_str(), buyPrice, new_buy_order);
+    }
+
+    for(auto x : selfOrders){
+        redisCommand(conn, x.c_str());
     }
 
     return;
@@ -90,6 +102,7 @@ void executeSellOrder(double sellPrice, int quantity, int userID, string symbol)
     }
 
     int reqQuantity = quantity;
+    vector<string> selfOrders ;
 
     while (reqQuantity > 0) {
         redisReply* reply = (redisReply*)redisCommand(conn, "ZREVRANGE %s 0 0 WITHSCORES", buyRedisKey.c_str());
@@ -104,7 +117,7 @@ void executeSellOrder(double sellPrice, int quantity, int userID, string symbol)
 
         char* order = reply->element[0]->str;
         double price = atof(reply->element[1]->str);
-        cout<<price<<" "<<sellPrice<<"\n" ;
+
         if (price < sellPrice) {
             break;
         }
@@ -112,6 +125,14 @@ void executeSellOrder(double sellPrice, int quantity, int userID, string symbol)
         int buyerUserID, availableQuantity;
         long timestamp;
         sscanf(order, "%ld_%d_%d", &timestamp, &buyerUserID, &availableQuantity);
+
+        if(buyerUserID == userID){
+            redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", buyRedisKey.c_str(), order);
+            stringstream ss;
+            ss << "ZADD " << sellRedisKey << " " << price << " " << order;
+            selfOrders.push_back(ss.str().c_str());
+            continue;
+        }
 
         if (availableQuantity > reqQuantity) {
             int remainingQuantity = availableQuantity - reqQuantity;
@@ -135,6 +156,10 @@ void executeSellOrder(double sellPrice, int quantity, int userID, string symbol)
         char new_sell_order[100];
         snprintf(new_sell_order, sizeof(new_sell_order), "%ld_%d_%d", epoch, userID, reqQuantity);
         redisReply* addReply = (redisReply*)redisCommand(conn, "ZADD %s %f %s", sellRedisKey.c_str(), sellPrice, new_sell_order);
+    }
+
+    for(auto x : selfOrders){
+        redisCommand(conn, x.c_str());
     }
 
     return;
