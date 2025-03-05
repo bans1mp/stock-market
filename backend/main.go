@@ -4,15 +4,11 @@ import (
 	"backend/controller"
 	"backend/db"
 	"backend/middleware"
-	trade "backend/proto"
-	"context"
+	"backend/pkg/matching_engine"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
@@ -22,33 +18,8 @@ func main() {
 	}
 	fmt.Println("Database connected: ", database)
 
-	conn, err := grpc.NewClient("localhost:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatalf("Error creating GRPC connection to server")
-	}
-	defer conn.Close()
-
-	client := trade.NewMatchingEngineClient(conn)
-
-	req := &trade.OrderRequest{
-		UserId: 1,
-		Symbol: "AAPL",
-		Price: 170,
-		Quantity: 11,
-		OrderType: "SELL",
-	}
-
-	// check buy and sell id different
-
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
-	defer cancel()
-
-	res, err := client.PlaceOrder(ctx, req)
-	if err != nil {
-		log.Fatalf("Error calling PlaceOrder: %v", err)
-	}
-
-	fmt.Println("Server Response:", res)
+	matching_engine.Init()
+	defer matching_engine.Close()
 
 	r := gin.Default()
 
