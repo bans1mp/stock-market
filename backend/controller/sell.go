@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func PlaceBuyOrder(c *gin.Context) {
+func PlaceSellOrder(c *gin.Context) {
 	orderRequest := models.OrderRequest{}
 
 	if err := c.ShouldBindJSON(&orderRequest); err != nil {

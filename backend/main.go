@@ -30,6 +30,7 @@ func main() {
     auth.Use(middleware.AuthMiddleware())
     // auth.GET("/profile", controller.GetProfile)
 	auth.POST("/buy", controller.PlaceBuyOrder)
+	auth.POST("/sell", controller.PlaceSellOrder)
 
 	r.Run(":8080")
 
