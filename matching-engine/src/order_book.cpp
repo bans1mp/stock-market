@@ -59,6 +59,7 @@ void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
             char new_order[100];
             snprintf(new_order, sizeof(new_order), "%ld_%d_%d", timestamp, userID, remainingQuantity);
             // send order via protobuf to golang for processing SQL
+            
 
             redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", sellRedisKey, order);
             redisReply *addReply = (redisReply *)redisCommand(conn, "ZADD %s %d %s", sellRedisKey, price, new_order);
