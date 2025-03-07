@@ -1,6 +1,8 @@
 package service
 
 import (
+	"backend/dto"
+	"backend/db"
 	pb "backend/proto"
 	"context"
 	"log"
@@ -14,7 +16,16 @@ type Backend struct {
 }
 
 func (s *Backend) ExecuteTrade(ctx context.Context, request *pb.TradeRequest) (*pb.TradeResponse, error) {
-	// implement trade here
+	tradeRequest := dto.ConvertTradeRequestFromProto(request)
+
+	err := db.InsertTradeRequest(tradeRequest) 
+	if err != nil {
+		return &pb.TradeResponse{
+			Success: false,
+			Message: err.Error(),
+		}, nil
+	}
+
 	return &pb.TradeResponse{
 		Success: true,
 		Message: "Trade executed successfully",

@@ -1,14 +1,27 @@
 package models
 
-type OrderRequest struct {
-	UserId    int     `json:"user_id" binding:"required"`
-	Symbol    string  `json:"symbol" binding:"required"`
+import (
+	"gorm.io/gorm"
+)
+
+type TradeRequest struct {
+	BuyerId   int    `json:"buyer_id" binding:"required"`
+	SellerId  int    `json:"seller_id" binding:"required"`
+	Symbol    string `json:"symbol" binding:"required"`
 	Price     float64 `json:"price" binding:"required"`
-	Quantity  int     `json:"quantity" binding:"required"`
-	OrderType string  `json:"order_type" binding:"required"`
+	Quantity  int     `json:"quantity" binding:"required,gte=1"`
 }
 
-type OrderResponse struct {
-	Status string `json:"status" binding:"required"`
-	Id     int    `json:"id" binding:"required"`
+type TradeResponse struct {
+	Success bool   `json:"success" binding:"required"`
+	Message string `json:"message" binding:"required"`
+}
+
+type Trade struct {
+	gorm.Model
+	BuyerID   int    `json:"buyer_id" binding:"required"`
+	SellerID  int    `json:"seller_id" binding:"required"`
+	Symbol    string `json:"symbol" binding:"required"`
+	Price     float64 `json:"price" binding:"required"`
+	Quantity  int     `json:"quantity" binding:"required,gte=1"`
 }
