@@ -9,11 +9,12 @@ import (
 	"google.golang.org/grpc"
 )
 
-type TradeServer struct {
+type Backend struct {
 	pb.UnimplementedBackendServer
 }
 
-func (s *TradeServer) ExecuteTrade(ctx context.Context, request *pb.TradeRequest) (*pb.TradeResponse, error) {
+func (s *Backend) ExecuteTrade(ctx context.Context, request *pb.TradeRequest) (*pb.TradeResponse, error) {
+	// implement trade here
 	return &pb.TradeResponse{
 		Success: true,
 		Message: "Trade executed successfully",
@@ -21,15 +22,15 @@ func (s *TradeServer) ExecuteTrade(ctx context.Context, request *pb.TradeRequest
 }
 
 func StartServer() {
-	lis, err := net.Listen("tcp", ":50052")
+	lis, err := net.Listen("tcp", ":8081")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
 	s := grpc.NewServer()
+	pb.RegisterBackendServer(s, &Backend{})
 
-
-	log.Println("gRPC server listening on port 50052")
+	log.Println("gRPC server listening on port 8081")
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}

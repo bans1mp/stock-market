@@ -5,6 +5,7 @@ import (
 	"backend/db"
 	"backend/middleware"
 	"backend/pkg/matching_engine"
+	"backend/service"
 	"fmt"
 	"log"
 
@@ -25,6 +26,8 @@ func main() {
 
 	r.POST("/register", controller.Register)
 	r.POST("/login", controller.Login)
+
+	go service.StartServer()
 
 	auth := r.Group("/")
     auth.Use(middleware.AuthMiddleware())
