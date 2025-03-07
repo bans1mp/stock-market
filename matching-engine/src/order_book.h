@@ -10,5 +10,6 @@ using namespace std;
 // Function declarations
 void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol);
 void executeSellOrder(double buyPrice, int quantity, int userID, string symbol);
+void InitGrpcClient() ;
 
 #endif // ORDER_BOOK_H
