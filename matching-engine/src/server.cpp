@@ -14,10 +14,10 @@ Status MatchingEngineImpl::PlaceOrder(ServerContext* context, const trade::Order
 
     string orderType = request->order_type();
     
-    if (orderType == "BUY") {
+    if (orderType == "buy") {
         executeBuyOrder(request->price(), request->quantity(), request->user_id(), request->symbol());
     } 
-    else if (orderType == "SELL") {
+    else if (orderType == "sell") {
         executeSellOrder(request->price(), request->quantity(), request->user_id(), request->symbol());
     } 
     else {

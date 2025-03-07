@@ -1,10 +1,20 @@
 #include "order_book.h"
 #include "redis.h"
 #include <hiredis/hiredis.h>
-#include <iostream>
+#include <bits/stdc++.h>
 #include <chrono>
+#include "client.h"
 
 using namespace std;
+
+std::unique_ptr<TradeClient> Client;
+
+void InitGrpcClient() {
+    string server_address("localhost:8081");
+    Client = std::make_unique<TradeClient>(
+        grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials())
+    );
+}
 
 void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
     cout << "Processing Buy Order: Price = " << buyPrice << ", Quantity = " << quantity << endl;
@@ -58,14 +68,16 @@ void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
             int remainingQuantity = availableQuantity-reqQuantity;
             char new_order[100];
             snprintf(new_order, sizeof(new_order), "%ld_%d_%d", timestamp, userID, remainingQuantity);
-            // send order via protobuf to golang for processing SQL
+            
+            Client->ExecuteTrade(userID, sellerUserID, symbol, price, reqQuantity);
 
             redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", sellRedisKey, order);
             redisReply *addReply = (redisReply *)redisCommand(conn, "ZADD %s %d %s", sellRedisKey, price, new_order);
 
             reqQuantity = 0 ;
         } else {
-            // send order via protobuf to golang for processing SQL
+            Client->ExecuteTrade(userID, sellerUserID, symbol, price, reqQuantity);
+
             redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", sellRedisKey, order);
             reqQuantity -= availableQuantity ;
         }
@@ -138,15 +150,16 @@ void executeSellOrder(double sellPrice, int quantity, int userID, string symbol)
             int remainingQuantity = availableQuantity - reqQuantity;
             char new_order[100];
             snprintf(new_order, sizeof(new_order), "%ld_%d_%d", timestamp, buyerUserID, remainingQuantity);
-            // send order via protobuf to golang for processing SQL
+            
+            Client->ExecuteTrade(buyerUserID, userID, symbol, price, reqQuantity);
 
             redisReply* delReply = (redisReply*)redisCommand(conn, "ZREM %s %s", buyRedisKey.c_str(), order);
             redisReply* addReply = (redisReply*)redisCommand(conn, "ZADD %s %f %s", buyRedisKey.c_str(), price, new_order);
-            cout<<"ZADD %s %f %s"<<buyRedisKey.c_str()<<price<<new_order<<"\n" ;
 
             reqQuantity = 0;
         } else {
-            // send order via protobuf to golang for processing SQL
+            Client->ExecuteTrade(buyerUserID, userID, symbol, price, availableQuantity);
+
             redisReply* delReply = (redisReply*)redisCommand(conn, "ZREM %s %s", buyRedisKey.c_str(), order);
             reqQuantity -= availableQuantity;
         }

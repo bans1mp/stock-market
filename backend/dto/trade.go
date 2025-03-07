@@ -6,12 +6,12 @@ import (
 )
 
 // ConvertOrderRequestToProto converts an OrderRequest struct to a Proto OrderRequest
-func ConvertOrderRequestToProto(req *models.OrderRequest) *trade.OrderRequest {
-	return &trade.OrderRequest{
-		UserId:    int32(req.UserId),
+func ConvertTradeRequestFromProto(req *trade.TradeRequest) *models.TradeRequest {
+	return &models.TradeRequest{
+		BuyerId:   int(req.BuyerId),
+		SellerId:  int(req.SellerId),
 		Symbol:    req.Symbol,
 		Price:     req.Price,
-		Quantity:  int32(req.Quantity),
-		OrderType: req.OrderType,
+		Quantity:  int(req.Quantity),
 	}
 }
