@@ -35,7 +35,7 @@ void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
     vector<string> selfOrders ;
 
     while(reqQuantity > 0) {
-        redisReply* reply = (redisReply*)redisCommand(conn, "ZRANGE %s 0 0 WITHSCORES", sellRedisKey);
+        redisReply* reply = (redisReply*)redisCommand(conn, "ZRANGE %s 0 0 WITHSCORES", sellRedisKey.c_str());
         if(reply == NULL || reply -> type != REDIS_REPLY_ARRAY) {
             printf("An error occured\n");
             break ;
@@ -57,7 +57,7 @@ void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
         sscanf(order, "%ld_%d_%d", &timestamp, &sellerUserID, &availableQuantity);
 
         if(sellerUserID == userID){
-            redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", sellRedisKey, order);
+            redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", sellRedisKey.c_str(), order);
             stringstream ss;
             ss << "ZADD " << sellRedisKey << " " << price << " " << order;
             selfOrders.push_back(ss.str().c_str());
@@ -67,12 +67,15 @@ void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
         if (availableQuantity > reqQuantity) {
             int remainingQuantity = availableQuantity-reqQuantity;
             char new_order[100];
-            snprintf(new_order, sizeof(new_order), "%ld_%d_%d", timestamp, userID, remainingQuantity);
+            snprintf(new_order, sizeof(new_order), "%ld_%d_%d", timestamp, sellerUserID, remainingQuantity);
             
             Client->ExecuteTrade(userID, sellerUserID, symbol, price, reqQuantity);
 
-            redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", sellRedisKey, order);
-            redisReply *addReply = (redisReply *)redisCommand(conn, "ZADD %s %d %s", sellRedisKey, price, new_order);
+            redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", sellRedisKey.c_str(), order);
+
+            string new_order_str(new_order);  
+
+            redisReply* addReply = (redisReply*)redisCommand(conn, "ZADD %s %d %s", sellRedisKey.c_str(), (int)price, new_order_str.c_str());
 
             reqQuantity = 0 ;
         } else {
@@ -154,7 +157,8 @@ void executeSellOrder(double sellPrice, int quantity, int userID, string symbol)
             Client->ExecuteTrade(buyerUserID, userID, symbol, price, reqQuantity);
 
             redisReply* delReply = (redisReply*)redisCommand(conn, "ZREM %s %s", buyRedisKey.c_str(), order);
-            redisReply* addReply = (redisReply*)redisCommand(conn, "ZADD %s %f %s", buyRedisKey.c_str(), price, new_order);
+            string new_order_str(new_order);  
+            redisReply* addReply = (redisReply*)redisCommand(conn, "ZADD %s %d %s", buyRedisKey.c_str(), (int)price, new_order_str.c_str());
 
             reqQuantity = 0;
         } else {

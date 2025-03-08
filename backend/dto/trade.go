@@ -15,3 +15,13 @@ func ConvertTradeRequestFromProto(req *trade.TradeRequest) *models.TradeRequest 
 		Quantity:  int(req.Quantity),
 	}
 }
+
+func ConvertTradeRequestToTrade(req *models.TradeRequest) *models.Trade {
+	return &models.Trade{
+		BuyerID: req.BuyerId,
+		SellerID: req.SellerId,
+		Symbol: req.Symbol,
+		Price: req.Price,
+		Quantity: req.Quantity,
+	}
+}
