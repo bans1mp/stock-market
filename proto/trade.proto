@@ -31,6 +31,7 @@ message TradeRequest {
   string symbol = 3;
   double price = 4;
   int32 quantity = 5;
+  double buyer_price = 6;
 }
 
 message TradeResponse {
