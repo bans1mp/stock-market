@@ -559,6 +559,7 @@ class TradeRequest final :
     kBuyerIdFieldNumber = 1,
     kSellerIdFieldNumber = 2,
     kPriceFieldNumber = 4,
+    kBuyerPriceFieldNumber = 6,
     kQuantityFieldNumber = 5,
   };
   // string symbol = 3;
@@ -602,6 +603,15 @@ class TradeRequest final :
   void _internal_set_price(double value);
   public:
 
+  // double buyer_price = 6;
+  void clear_buyer_price();
+  double buyer_price() const;
+  void set_buyer_price(double value);
+  private:
+  double _internal_buyer_price() const;
+  void _internal_set_buyer_price(double value);
+  public:
+
   // int32 quantity = 5;
   void clear_quantity();
   int32_t quantity() const;
@@ -623,6 +633,7 @@ class TradeRequest final :
     int32_t buyer_id_;
     int32_t seller_id_;
     double price_;
+    double buyer_price_;
     int32_t quantity_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
@@ -1170,6 +1181,26 @@ inline void TradeRequest::_internal_set_quantity(int32_t value) {
 inline void TradeRequest::set_quantity(int32_t value) {
   _internal_set_quantity(value);
   // @@protoc_insertion_point(field_set:trade.TradeRequest.quantity)
+}
+
+// double buyer_price = 6;
+inline void TradeRequest::clear_buyer_price() {
+  _impl_.buyer_price_ = 0;
+}
+inline double TradeRequest::_internal_buyer_price() const {
+  return _impl_.buyer_price_;
+}
+inline double TradeRequest::buyer_price() const {
+  // @@protoc_insertion_point(field_get:trade.TradeRequest.buyer_price)
+  return _internal_buyer_price();
+}
+inline void TradeRequest::_internal_set_buyer_price(double value) {
+  
+  _impl_.buyer_price_ = value;
+}
+inline void TradeRequest::set_buyer_price(double value) {
+  _internal_set_buyer_price(value);
+  // @@protoc_insertion_point(field_set:trade.TradeRequest.buyer_price)
 }
 
 // -------------------------------------------------------------------

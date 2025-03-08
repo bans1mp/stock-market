@@ -13,6 +13,7 @@ func ConvertTradeRequestFromProto(req *trade.TradeRequest) *models.TradeRequest 
 		Symbol:    req.Symbol,
 		Price:     req.Price,
 		Quantity:  int(req.Quantity),
+		BuyPrice:  req.BuyerPrice,
 	}
 }
 

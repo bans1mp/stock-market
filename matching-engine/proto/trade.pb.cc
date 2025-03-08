@@ -58,6 +58,7 @@ PROTOBUF_CONSTEXPR TradeRequest::TradeRequest(
   , /*decltype(_impl_.buyer_id_)*/0
   , /*decltype(_impl_.seller_id_)*/0
   , /*decltype(_impl_.price_)*/0
+  , /*decltype(_impl_.buyer_price_)*/0
   , /*decltype(_impl_.quantity_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct TradeRequestDefaultTypeInternal {
@@ -119,6 +120,7 @@ const uint32_t TableStruct_trade_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(pr
   PROTOBUF_FIELD_OFFSET(::trade::TradeRequest, _impl_.symbol_),
   PROTOBUF_FIELD_OFFSET(::trade::TradeRequest, _impl_.price_),
   PROTOBUF_FIELD_OFFSET(::trade::TradeRequest, _impl_.quantity_),
+  PROTOBUF_FIELD_OFFSET(::trade::TradeRequest, _impl_.buyer_price_),
   ~0u,  // no _has_bits_
   PROTOBUF_FIELD_OFFSET(::trade::TradeResponse, _internal_metadata_),
   ~0u,  // no _extensions_
@@ -132,7 +134,7 @@ static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protode
   { 0, -1, -1, sizeof(::trade::OrderRequest)},
   { 11, -1, -1, sizeof(::trade::OrderResponse)},
   { 19, -1, -1, sizeof(::trade::TradeRequest)},
-  { 30, -1, -1, sizeof(::trade::TradeResponse)},
+  { 31, -1, -1, sizeof(::trade::TradeResponse)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -147,19 +149,19 @@ const char descriptor_table_protodef_trade_2eproto[] PROTOBUF_SECTION_VARIABLE(p
   "user_id\030\001 \001(\005\022\016\n\006symbol\030\002 \001(\t\022\r\n\005price\030\003"
   " \001(\001\022\020\n\010quantity\030\004 \001(\005\022\022\n\norder_type\030\005 \001"
   "(\t\"1\n\rOrderResponse\022\017\n\007success\030\001 \001(\010\022\017\n\007"
-  "message\030\002 \001(\t\"d\n\014TradeRequest\022\020\n\010buyer_i"
+  "message\030\002 \001(\t\"y\n\014TradeRequest\022\020\n\010buyer_i"
   "d\030\001 \001(\005\022\021\n\tseller_id\030\002 \001(\005\022\016\n\006symbol\030\003 \001"
-  "(\t\022\r\n\005price\030\004 \001(\001\022\020\n\010quantity\030\005 \001(\005\"1\n\rT"
-  "radeResponse\022\017\n\007success\030\001 \001(\010\022\017\n\007message"
-  "\030\002 \001(\t2I\n\016MatchingEngine\0227\n\nPlaceOrder\022\023"
-  ".trade.OrderRequest\032\024.trade.OrderRespons"
-  "e2D\n\007Backend\0229\n\014ExecuteTrade\022\023.trade.Tra"
-  "deRequest\032\024.trade.TradeResponseB\017Z\r./pro"
-  "to;tradeb\006proto3"
+  "(\t\022\r\n\005price\030\004 \001(\001\022\020\n\010quantity\030\005 \001(\005\022\023\n\013b"
+  "uyer_price\030\006 \001(\001\"1\n\rTradeResponse\022\017\n\007suc"
+  "cess\030\001 \001(\010\022\017\n\007message\030\002 \001(\t2I\n\016MatchingE"
+  "ngine\0227\n\nPlaceOrder\022\023.trade.OrderRequest"
+  "\032\024.trade.OrderResponse2D\n\007Backend\0229\n\014Exe"
+  "cuteTrade\022\023.trade.TradeRequest\032\024.trade.T"
+  "radeResponseB\017Z\r./proto;tradeb\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_trade_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_trade_2eproto = {
-    false, false, 496, descriptor_table_protodef_trade_2eproto,
+    false, false, 517, descriptor_table_protodef_trade_2eproto,
     "trade.proto",
     &descriptor_table_trade_2eproto_once, nullptr, 0, 4,
     schemas, file_default_instances, TableStruct_trade_2eproto::offsets,
@@ -773,6 +775,7 @@ TradeRequest::TradeRequest(const TradeRequest& from)
     , decltype(_impl_.buyer_id_){}
     , decltype(_impl_.seller_id_){}
     , decltype(_impl_.price_){}
+    , decltype(_impl_.buyer_price_){}
     , decltype(_impl_.quantity_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
@@ -800,6 +803,7 @@ inline void TradeRequest::SharedCtor(
     , decltype(_impl_.buyer_id_){0}
     , decltype(_impl_.seller_id_){0}
     , decltype(_impl_.price_){0}
+    , decltype(_impl_.buyer_price_){0}
     , decltype(_impl_.quantity_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
@@ -888,6 +892,14 @@ const char* TradeRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* 
         } else
           goto handle_unusual;
         continue;
+      // double buyer_price = 6;
+      case 6:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 49)) {
+          _impl_.buyer_price_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<double>(ptr);
+          ptr += sizeof(double);
+        } else
+          goto handle_unusual;
+        continue;
       default:
         goto handle_unusual;
     }  // switch
@@ -955,6 +967,16 @@ uint8_t* TradeRequest::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteInt32ToArray(5, this->_internal_quantity(), target);
   }
 
+  // double buyer_price = 6;
+  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  double tmp_buyer_price = this->_internal_buyer_price();
+  uint64_t raw_buyer_price;
+  memcpy(&raw_buyer_price, &tmp_buyer_price, sizeof(tmp_buyer_price));
+  if (raw_buyer_price != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteDoubleToArray(6, this->_internal_buyer_price(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -997,6 +1019,15 @@ size_t TradeRequest::ByteSizeLong() const {
     total_size += 1 + 8;
   }
 
+  // double buyer_price = 6;
+  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  double tmp_buyer_price = this->_internal_buyer_price();
+  uint64_t raw_buyer_price;
+  memcpy(&raw_buyer_price, &tmp_buyer_price, sizeof(tmp_buyer_price));
+  if (raw_buyer_price != 0) {
+    total_size += 1 + 8;
+  }
+
   // int32 quantity = 5;
   if (this->_internal_quantity() != 0) {
     total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_quantity());
@@ -1035,6 +1066,13 @@ void TradeRequest::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::P
   memcpy(&raw_price, &tmp_price, sizeof(tmp_price));
   if (raw_price != 0) {
     _this->_internal_set_price(from._internal_price());
+  }
+  static_assert(sizeof(uint64_t) == sizeof(double), "Code assumes uint64_t and double are the same size.");
+  double tmp_buyer_price = from._internal_buyer_price();
+  uint64_t raw_buyer_price;
+  memcpy(&raw_buyer_price, &tmp_buyer_price, sizeof(tmp_buyer_price));
+  if (raw_buyer_price != 0) {
+    _this->_internal_set_buyer_price(from._internal_buyer_price());
   }
   if (from._internal_quantity() != 0) {
     _this->_internal_set_quantity(from._internal_quantity());

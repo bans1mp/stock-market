@@ -10,6 +10,7 @@ type TradeRequest struct {
 	Symbol    string `json:"symbol" binding:"required"`
 	Price     float64 `json:"price" binding:"required"`
 	Quantity  int     `json:"quantity" binding:"required,gte=1"`
+	BuyPrice  float64 `json:"buy_price" binding:"required"`
 }
 
 type TradeResponse struct {

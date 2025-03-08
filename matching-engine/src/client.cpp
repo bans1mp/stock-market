@@ -12,13 +12,14 @@ using trade::TradeResponse;
 TradeClient::TradeClient(std::shared_ptr<Channel> channel)
     : stub_(Backend::NewStub(channel)) {}
 
-void TradeClient::ExecuteTrade(int buyer_id, int seller_id, const std::string& symbol, double price, int quantity) {
+void TradeClient::ExecuteTrade(int buyer_id, int seller_id, const std::string& symbol, double price, int quantity, int buyPrice) {
     TradeRequest request;
     request.set_buyer_id(buyer_id);
     request.set_seller_id(seller_id);
     request.set_symbol(symbol);
     request.set_price(price);
     request.set_quantity(quantity);
+    request.set_buyer_price(buyPrice);
 
     TradeResponse response;
     ClientContext context;

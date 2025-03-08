@@ -8,7 +8,7 @@
 class TradeClient {
 public:
     TradeClient(std::shared_ptr<grpc::Channel> channel);
-    void ExecuteTrade(int buyer_id, int seller_id, const std::string& symbol, double price, int quantity);
+    void ExecuteTrade(int buyer_id, int seller_id, const std::string& symbol, double price, int quantity, int buyPrice);
 
 private:
     std::unique_ptr<trade::Backend::Stub> stub_;
