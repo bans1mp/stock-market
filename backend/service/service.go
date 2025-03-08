@@ -26,6 +26,14 @@ func (s *Backend) ExecuteTrade(ctx context.Context, request *pb.TradeRequest) (*
 		}, nil
 	}
 
+	err = db.UpdateBalance(tradeRequest)
+	if err != nil {
+		return &pb.TradeResponse{
+			Success: false,
+			Message: err.Error(),
+		}, nil
+	}
+
 	return &pb.TradeResponse{
 		Success: true,
 		Message: "Trade executed successfully",
