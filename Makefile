@@ -9,4 +9,4 @@ compile_go_protos:
 	cd backend && protoc --proto_path=../proto --go_out=. --go-grpc_out=. ../proto/trade.proto
 
 compile_cpp_protos:
-	cd matching-engine && protoc --proto_path=../proto --cpp_out=. --grpc_out=. --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` ../proto/trade.proto
+	cd matching-engine && protoc --proto_path=../proto --cpp_out=./proto --grpc_out=./proto --plugin=protoc-gen-grpc=`which grpc_cpp_plugin` ../proto/trade.proto

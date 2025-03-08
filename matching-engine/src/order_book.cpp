@@ -69,7 +69,7 @@ void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
             char new_order[100];
             snprintf(new_order, sizeof(new_order), "%ld_%d_%d", timestamp, sellerUserID, remainingQuantity);
             
-            Client->ExecuteTrade(userID, sellerUserID, symbol, price, reqQuantity);
+            Client->ExecuteTrade(userID, sellerUserID, symbol, price, reqQuantity, buyPrice);
 
             redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", sellRedisKey.c_str(), order);
 
@@ -79,7 +79,7 @@ void executeBuyOrder(double buyPrice, int quantity, int userID, string symbol) {
 
             reqQuantity = 0 ;
         } else {
-            Client->ExecuteTrade(userID, sellerUserID, symbol, price, reqQuantity);
+            Client->ExecuteTrade(userID, sellerUserID, symbol, price, reqQuantity, buyPrice);
 
             redisReply *delReply = (redisReply *)redisCommand(conn, "ZREM %s %s", sellRedisKey, order);
             reqQuantity -= availableQuantity ;
@@ -154,7 +154,7 @@ void executeSellOrder(double sellPrice, int quantity, int userID, string symbol)
             char new_order[100];
             snprintf(new_order, sizeof(new_order), "%ld_%d_%d", timestamp, buyerUserID, remainingQuantity);
             
-            Client->ExecuteTrade(buyerUserID, userID, symbol, price, reqQuantity);
+            Client->ExecuteTrade(buyerUserID, userID, symbol, price, reqQuantity, price);
 
             redisReply* delReply = (redisReply*)redisCommand(conn, "ZREM %s %s", buyRedisKey.c_str(), order);
             string new_order_str(new_order);  
@@ -162,7 +162,7 @@ void executeSellOrder(double sellPrice, int quantity, int userID, string symbol)
 
             reqQuantity = 0;
         } else {
-            Client->ExecuteTrade(buyerUserID, userID, symbol, price, availableQuantity);
+            Client->ExecuteTrade(buyerUserID, userID, symbol, price, availableQuantity, price);
 
             redisReply* delReply = (redisReply*)redisCommand(conn, "ZREM %s %s", buyRedisKey.c_str(), order);
             reqQuantity -= availableQuantity;
