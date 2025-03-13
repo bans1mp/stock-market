@@ -5,6 +5,7 @@ import (
 	"backend/models"
 	"backend/pkg/matching_engine"
 	"context"
+	"errors"
 	"net/http"
 	"time"
 
@@ -17,6 +18,11 @@ func PlaceSellOrder(c *gin.Context) {
 	if err := c.ShouldBindJSON(&orderRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
+	}
+
+	err := validateSellOrder(&orderRequest)
+	if err != nil {
+		return 
 	}
 
 	// convert input into protobuf message
@@ -32,4 +38,14 @@ func PlaceSellOrder(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": orderResponseProto.Message, "status": orderResponseProto.Success})
+}
+
+func validateSellOrder(orderRequest *models.OrderRequest) error {
+	if orderRequest.Symbol == "" {
+		return errors.New("symbol not present")
+	}
+	if orderRequest.OrderType != "sell" {
+		return errors.New("wrong order type")
+	}
+	return nil
 }

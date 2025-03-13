@@ -26,15 +26,18 @@ func main() {
 
 	r.POST("/register", controller.Register)
 	r.POST("/login", controller.Login)
-	r.POST("/buy", controller.PlaceBuyOrder)
-	r.POST("/sell", controller.PlaceSellOrder)
 	go service.StartServer()
 
 	auth := r.Group("/")
     auth.Use(middleware.AuthMiddleware())
     // auth.GET("/profile", controller.GetProfile)
-	// auth.POST("/buy", controller.PlaceBuyOrder)
-	// auth.POST("/sell", controller.PlaceSellOrder)
+	auth.POST("/buy", controller.PlaceBuyOrder)
+	auth.POST("/sell", controller.PlaceSellOrder)
+
+	// to do check if the person has the stocks that he wants to sell
+	// introduce portfolio
+	// check how companies list their stock (introduce IPO initially the company has x shares and it wants to sell)
+	// introduce scripts to trade automatically
 
 	r.Run(":8080")
 
