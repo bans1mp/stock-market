@@ -1,58 +1,77 @@
 import "./index.css";
-import { motion } from "framer-motion";
-import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import homeImage from "./assets/home.jpg";
 
-const data = [
-  { time: "10 AM", price: 150 },
-  { time: "11 AM", price: 155 },
-  { time: "12 PM", price: 160 },
-  { time: "1 PM", price: 158 },
-  { time: "2 PM", price: 162 },
-];
-
-function Card({ children, className }) {
-  return <div className={`card ${className}`}>{children}</div>;
-}
-
-function CardContent({ children }) {
-  return <div>{children}</div>;
-}
-
-function Button({ children, className, onClick }) {
+function Navbar() {
   return (
-    <button className={`button ${className}`} onClick={onClick}>
-      {children}
-    </button>
+    <nav className="navbar navbar-expand-lg navbar-dark" style={{ background: "linear-gradient(to bottom, #1e1e1e, #181818)" }}>
+      <div className="container">
+        <a className="navbar-brand text-white fw-bold fs-3" href="#">StockSim</a>
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+        <div className="collapse navbar-collapse" id="navbarNav">
+          <ul className="navbar-nav ms-auto fs-5">
+            <li className="nav-item">
+              <a className="nav-link text-light" href="#">Home</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link text-light" href="#">Market</a>
+            </li>
+            <li className="nav-item">
+              <a className="nav-link text-light" href="#">Contact</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="text-white text-center py-3 mt-auto" style={{ background: "linear-gradient(to top, #1e1e1e, #181818)" }}>
+      <p className="mb-0">© 2025 StockSim | All rights reserved.</p>
+    </footer>
   );
 }
 
 function App() {
   return (
-    <div className="container">
-      <motion.h1
-        className="title"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        Stock Tracker
-      </motion.h1>
-      <Card className="chart-card">
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={data}>
-              <XAxis dataKey="time" stroke="#ddd" />
-              <YAxis stroke="#ddd" />
-              <Tooltip contentStyle={{ background: "#333", border: "none" }} />
-              <Line type="monotone" dataKey="price" stroke="#00c6ff" strokeWidth={2} dot={{ r: 4 }} />
-            </LineChart>
-          </ResponsiveContainer>
-          <div className="button-container">
-            <Button className="buy-button">Buy</Button>
-            <Button className="sell-button">Sell</Button>
-          </div>
-        </CardContent>
-      </Card>
+    <div 
+      className="d-flex flex-column min-vh-100 text-white" 
+      style={{ 
+        backgroundImage: `url(${homeImage})`, 
+        backgroundSize: "cover", 
+        backgroundPosition: "center", 
+        backgroundRepeat: "no-repeat", 
+        backgroundBlendMode: "overlay",
+        backgroundColor: "rgba(0, 0, 0, 0.85)" 
+      }}
+    >
+      <Navbar />
+      <div className="container flex-grow-1 d-flex align-items-center justify-content-between mt-5 px-5">
+        <div className="text-section" style={{ maxWidth: "50%", opacity: "0.75", color: "rgba(200,200,200,0.85)", textShadow: "2px 2px 6px rgba(0,0,0,0.8)" }}>
+          <h1 className="fw-bold display-2 text-success border-start border-4 border-success ps-3" style={{ fontFamily: "Poppins, sans-serif" }}>
+            Welcome to <br />
+            <span className="text-danger">StockSim</span>
+          </h1>
+          <p className="lead fs-2">
+            <span className="fw-bold text-success">Simulate</span>, <span className="fw-bold text-success">Trade</span>, <br />
+            and <span className="fw-bold text-success">Master the Market</span> <br />
+            with Realistic Stock Exchange Models.
+          </p>
+        </div>
+        <div className="button-section d-flex align-items-center gap-4">
+          <button className="btn btn-success px-5 py-4 fs-3 fw-bold" style={{ minWidth: "220px", opacity: "0.75" }}>Login</button>
+          <button className="btn btn-outline-danger px-5 py-4 fs-3 fw-bold" style={{ minWidth: "220px", opacity: "0.75" }}>Register</button>
+        </div>
+      </div>
+      <Footer />
     </div>
   );
 }
