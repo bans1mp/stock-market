@@ -26,15 +26,16 @@ func main() {
 
 	r.POST("/register", controller.Register)
 	r.POST("/login", controller.Login)
-	r.POST("/buy", controller.PlaceBuyOrder)
-	r.POST("/sell", controller.PlaceSellOrder)
 	go service.StartServer()
 
 	auth := r.Group("/")
     auth.Use(middleware.AuthMiddleware())
     // auth.GET("/profile", controller.GetProfile)
-	// auth.POST("/buy", controller.PlaceBuyOrder)
-	// auth.POST("/sell", controller.PlaceSellOrder)
+	auth.POST("/buy", controller.PlaceBuyOrder)
+	auth.POST("/sell", controller.PlaceSellOrder)
+	auth.POST("/buy-ipo", controller.BuyIPO)
+	r.POST("list-ipo", controller.ListIPO)
+	// introduce scripts to trade automatically
 
 	r.Run(":8080")
 

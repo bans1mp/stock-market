@@ -1,8 +1,9 @@
 package service
 
 import (
-	"backend/dto"
 	"backend/db"
+	"backend/dto"
+	"backend/models"
 	pb "backend/proto"
 	"context"
 	"log"
@@ -32,6 +33,22 @@ func (s *Backend) ExecuteTrade(ctx context.Context, request *pb.TradeRequest) (*
 			Success: false,
 			Message: err.Error(),
 		}, nil
+	}
+
+	// Add stocks to the buyer
+	var userStock models.UserStock
+	if err := db.DB.Where("user_id = ? AND stock_id = ?", tradeRequest.BuyerId, tradeRequest.Symbol).First(&userStock).Error; err != nil {
+		// Buyer does not own this stock yet, create a new entry
+		userStock = models.UserStock{
+			UserID:   uint(tradeRequest.BuyerId),
+			StockSymbol:  tradeRequest.Symbol,
+			Quantity: int(tradeRequest.Quantity),
+		}
+		db.DB.Create(&userStock)
+	} else {
+		// Buyer already owns the stock, update quantity
+		userStock.Quantity += int(tradeRequest.Quantity)
+		db.DB.Save(&userStock)
 	}
 
 	return &pb.TradeResponse{
