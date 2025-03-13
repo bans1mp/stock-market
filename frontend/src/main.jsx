@@ -4,6 +4,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./App";
 import Market from "./pages/Market";
 import Orders from "./pages/Orders";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
