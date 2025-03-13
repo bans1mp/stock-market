@@ -60,11 +60,11 @@ func BuyIPO(c *gin.Context) {
 
     // Check if the user already owns this stock
     var userStock models.UserStock
-    if err := db.DB.Where("user_id = ? AND stock_id = ?", req.UserID, stock.ID).First(&userStock).Error; err != nil {
+    if err := db.DB.Where("user_id = ? AND stock_symbol = ?", req.UserID, stock.ID).First(&userStock).Error; err != nil {
         // User does not own the stock yet, create a new entry
         userStock = models.UserStock{
             UserID:   req.UserID,
-            StockID:  stock.ID,
+            StockSymbol:  stock.Symbol,
             Quantity: req.Quantity,
         }
         db.DB.Create(&userStock)

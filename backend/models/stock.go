@@ -14,7 +14,7 @@ type Stock struct {
 type UserStock struct {
 	gorm.Model
 	UserID  uint `json:"user_id"`
-	StockID uint `json:"stock_id"`
+	StockSymbol string `json:"stock_symbol"`
 	Quantity int `json:"quantity"`
 }
 
