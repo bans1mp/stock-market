@@ -23,3 +23,9 @@ type BuyIPORequest struct {
 	Symbol   string `json:"symbol"`
 	Quantity int    `json:"quantity"`
 }
+
+type ListIPORequest struct {
+	Symbol string `json:"symbol"`
+	Quantity int `json:"quantity"`
+	IPOPrice float64 `json:"ipo_price"`
+}

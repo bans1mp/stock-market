@@ -34,9 +34,7 @@ func main() {
 	auth.POST("/buy", controller.PlaceBuyOrder)
 	auth.POST("/sell", controller.PlaceSellOrder)
 	auth.POST("/buy-ipo", controller.BuyIPO)
-	// to do check if the person has the stocks that he wants to sell
-	// introduce portfolio
-	// check how companies list their stock (introduce IPO initially the company has x shares and it wants to sell)
+	r.POST("list-ipo", controller.ListIPO)
 	// introduce scripts to trade automatically
 
 	r.Run(":8080")
