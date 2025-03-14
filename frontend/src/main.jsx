@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import Stocks from "./pages/Stocks";
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -17,6 +18,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/" element={<App />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/stocks" element={<Stocks />} />
         <Route path="/market" element={<Market />} />
         <Route path="/orders" element={<Orders />} />
       </Routes>
