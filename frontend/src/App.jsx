@@ -1,46 +1,19 @@
 import "./index.css";
 import homeImage from "./assets/home.jpg";
-
-function Navbar() {
-  return (
-    <nav className="navbar navbar-expand-lg navbar-dark" style={{ background: "linear-gradient(to bottom, #1e1e1e, #181818)" }}>
-      <div className="container">
-        <a className="navbar-brand text-white fw-bold fs-3" href="#">StockSim</a>
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto fs-5">
-            <li className="nav-item">
-              <a className="nav-link text-light" href="#">Home</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link text-light" href="#">Market</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link text-light" href="#">Contact</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="text-white text-center py-3 mt-auto" style={{ background: "linear-gradient(to top, #1e1e1e, #181818)" }}>
-      <p className="mb-0">© 2025 StockSim | All rights reserved.</p>
-    </footer>
-  );
-}
+import Navbar from "./components/Navbar.jsx";
+import Footer from "./components/Footer.jsx";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 function App() {
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
   return (
     <div 
       className="d-flex flex-column min-vh-100 text-white" 
@@ -67,8 +40,71 @@ function App() {
           </p>
         </div>
         <div className="button-section d-flex align-items-center gap-4">
-          <button className="btn btn-success px-5 py-4 fs-3 fw-bold" style={{ minWidth: "220px", opacity: "0.75" }}>Login</button>
-          <button className="btn btn-outline-danger px-5 py-4 fs-3 fw-bold" style={{ minWidth: "220px", opacity: "0.75" }}>Register</button>
+          {isLoggedIn ? (
+            <button 
+              className="btn px-5 py-4 fs-3 fw-bold border border-white text-white" 
+              style={{ 
+                minWidth: "220px", 
+                backgroundColor: "transparent", 
+                opacity: "0.75",
+                transition: "0.3s ease-in-out",
+              }}
+              onMouseOver={(e) => {
+                e.target.style.backgroundColor = "rgba(255, 255, 255, 0.2)";
+                e.target.style.color = "#000"; // Change text color to black
+                e.target.style.opacity = "1";
+              }}
+              onMouseOut={(e) => {
+                e.target.style.backgroundColor = "transparent";
+                e.target.style.color = "white";
+                e.target.style.opacity = "0.75";
+              }}
+              onClick={() => navigate("/stocks")}
+            >
+              Start Trading
+            </button>
+          ) : (
+            <>
+              <button 
+                className="btn btn-success px-5 py-4 fs-3 fw-bold" 
+                style={{ 
+                  minWidth: "220px", 
+                  opacity: "0.85",
+                  transition: "0.3s ease-in-out",
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = "#157347"; // Darker green
+                  e.target.style.color = "#ddd"; // Lighter text
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = "#198754"; // Original green
+                  e.target.style.color = "white";
+                }}
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </button>
+              <button 
+                className="btn btn-outline-danger px-5 py-4 fs-3 fw-bold" 
+                style={{ 
+                  minWidth: "220px", 
+                  opacity: "0.85",
+                  transition: "0.3s ease-in-out",
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.backgroundColor = "rgba(220, 53, 69, 0.85)"; // Red with opacity
+                  e.target.style.color = "#fff"; // Ensure white text
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.backgroundColor = "transparent"; // Back to outline style
+                  e.target.style.color = "#dc3545"; // Red text
+                }}
+                onClick={() => navigate("/register")}
+              >
+                Register
+              </button>
+            </>
+          )}
         </div>
       </div>
       <Footer />
