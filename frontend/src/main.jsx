@@ -5,6 +5,7 @@ import App from "./App";
 import Market from "./pages/Market";
 import Orders from "./pages/Orders";
 import Login from "./pages/Login";
+import OrderPage from "./pages/OrderPage";
 import Register from "./pages/Register";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -21,6 +22,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Route path="/stocks" element={<Stocks />} />
         <Route path="/market" element={<Market />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/buy-order/:symbol" element={<OrderPage orderType="buy" />} />
+        <Route path="/sell-order/:symbol" element={<OrderPage orderType="sell" />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
 import homeImage from "../assets/home.jpg";
@@ -7,6 +8,7 @@ import homeImage from "../assets/home.jpg";
 const Stocks = () => {
   const [stocks, setStocks] = useState([]);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchStocks = async () => {
@@ -32,6 +34,10 @@ const Stocks = () => {
 
     fetchStocks();
   }, []);
+
+  const handleOrder = (symbol, type) => {
+    navigate(`/${type}-order/${symbol}`);
+  };
 
   return (
     <div
@@ -62,6 +68,7 @@ const Stocks = () => {
                 <tr>
                   <th>Stock Symbol</th>
                   <th>IPO Price ($)</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -70,11 +77,25 @@ const Stocks = () => {
                     <tr key={index}>
                       <td>{stock.symbol}</td>
                       <td>{stock.ipo_price}</td>
+                      <td>
+                        <button
+                          className="btn btn-success me-2"
+                          onClick={() => handleOrder(stock.symbol, "buy")}
+                        >
+                          Buy
+                        </button>
+                        <button
+                          className="btn btn-danger"
+                          onClick={() => handleOrder(stock.symbol, "sell")}
+                        >
+                          Sell
+                        </button>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="2" className="text-center fs-4 py-3">
+                    <td colSpan="3" className="text-center fs-4 py-3">
                       Loading stocks...
                     </td>
                   </tr>
