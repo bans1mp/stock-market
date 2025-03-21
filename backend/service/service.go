@@ -35,6 +35,14 @@ func (s *Backend) ExecuteTrade(ctx context.Context, request *pb.TradeRequest) (*
 		}, nil
 	}
 
+	err = db.UpdateStockPrices(tradeRequest)
+	if err != nil {
+		return &pb.TradeResponse{
+			Success: false,
+			Message: err.Error(),
+		}, nil
+	}
+
 	// Add stocks to the buyer
 	var userStock models.UserStock
 	if err := db.DB.Where("user_id = ? AND stock_id = ?", tradeRequest.BuyerId, tradeRequest.Symbol).First(&userStock).Error; err != nil {

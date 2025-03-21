@@ -39,3 +39,16 @@ func UpdateBalance(tradeRequest *models.TradeRequest) error {
 	
 	return nil
 }
+
+func UpdateStockPrices(tradeRequest *models.TradeRequest) error {
+	//insert entry of the buy price in stock price table
+	result := DB.Create(&models.StockPrice{
+		StockSymbol: tradeRequest.Symbol,
+		Price: tradeRequest.BuyPrice,
+	})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
