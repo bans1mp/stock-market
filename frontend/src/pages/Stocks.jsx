@@ -85,10 +85,16 @@ const Stocks = () => {
                           Buy
                         </button>
                         <button
-                          className="btn btn-danger"
+                          className="btn btn-danger me-2"
                           onClick={() => handleOrder(stock.symbol, "sell")}
                         >
                           Sell
+                        </button>
+                        <button
+                          className="btn btn-info"
+                          onClick={() => navigate(`/stocks/${stock.symbol}`)}
+                        >
+                          View Details
                         </button>
                       </td>
                     </tr>

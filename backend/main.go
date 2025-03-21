@@ -42,6 +42,7 @@ func main() {
 	auth.POST("/sell", controller.PlaceSellOrder)
 	auth.POST("/buy-ipo", controller.BuyIPO)
 	auth.GET("/get-stocks", controller.GetStocks)
+	auth.GET("/get-stock-prices/:symbol", controller.GetStockPrices)
 	r.POST("list-ipo", controller.ListIPO)
 	// introduce scripts to trade automatically
 

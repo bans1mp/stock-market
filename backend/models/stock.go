@@ -29,3 +29,9 @@ type ListIPORequest struct {
 	Quantity int `json:"quantity"`
 	IPOPrice float64 `json:"ipo_price"`
 }
+
+type StockPrice struct {
+	gorm.Model
+	StockSymbol string `json:"stock_symbol"`
+	Price float64 `json:"price"`
+}

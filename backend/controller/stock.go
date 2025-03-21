@@ -21,3 +21,12 @@ func GetStocks(c *gin.Context) {
 	// Return stocks as JSON
 	c.JSON(http.StatusOK, stocks)
 }
+
+func GetStockPrices(c *gin.Context) {
+	symbol := c.Param("symbol")
+	// fetch all entries for the given stock symbol
+	var stockPrices []models.StockPrice
+	db.DB.Where("stock_symbol = ?", symbol).Order("created_at DESC").Find(&stockPrices)
+	c.JSON(http.StatusOK, stockPrices)
+
+}

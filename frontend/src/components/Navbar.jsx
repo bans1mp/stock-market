@@ -1,8 +1,19 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
 function Navbar() {
+  const [token, setToken] = useState(localStorage.getItem("token"));
+
+  useEffect(() => {
+    const handleStorageChange = () => setToken(localStorage.getItem("token"));
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
   return (
     <nav className="navbar navbar-expand-lg navbar-dark" style={{ background: "linear-gradient(to bottom, #1e1e1e, #181818)" }}>
       <div className="container">
-        <a className="navbar-brand text-white fw-bold fs-3" href="#">StockSim</a>
+        <Link className="navbar-brand text-white fw-bold fs-3" to="/">StockSim</Link>
         <button
           className="navbar-toggler"
           type="button"
@@ -13,15 +24,25 @@ function Navbar() {
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto fs-5">
-            <li className="nav-item">
-              <a className="nav-link text-light" href="#">Home</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link text-light" href="#">Market</a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link text-light" href="#">Contact</a>
-            </li>
+            {token ? (
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link text-light" to="/">Home</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link text-light" to="/stocks">Market</Link>
+                </li>
+              </>
+            ) : (
+              <>
+                <li className="nav-item">
+                  <Link className="nav-link text-light" to="/login">Login</Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link text-light" to="/signup">Signup</Link>
+                </li>
+              </>
+            )}
           </ul>
         </div>
       </div>
@@ -29,4 +50,4 @@ function Navbar() {
   );
 }
 
-export default Navbar
+export default Navbar;

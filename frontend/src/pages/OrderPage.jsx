@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar.jsx";
 import Footer from "../components/Footer.jsx";
@@ -7,6 +7,7 @@ import homeImage from "../assets/home.jpg";
 
 const OrderPage = ({ orderType }) => {
   const { symbol } = useParams();
+  const navigate = useNavigate();
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
 
@@ -26,10 +27,10 @@ const OrderPage = ({ orderType }) => {
         order_type: orderType,
       };
 
-      const response = await axios.post("http://localhost:8080/" + `${orderType}`, orderData, {
+      const response = await axios.post(`http://localhost:8080/${orderType}`, orderData, {
         headers: { Authorization: token },
       });
-      console.log(response)
+
       alert(response.data.message);
     } catch (error) {
       console.error("Error placing order:", error);
@@ -90,8 +91,11 @@ const OrderPage = ({ orderType }) => {
               onChange={(e) => setPrice(e.target.value)}
             />
           </div>
-          <button className={`btn btn-${orderType === "buy" ? "success" : "danger"} w-100`} onClick={placeOrder}>
+          <button className={`btn btn-${orderType === "buy" ? "success" : "danger"} w-100 mb-3`} onClick={placeOrder}>
             Confirm {orderType} Order
+          </button>
+          <button className="btn btn-secondary w-100" onClick={() => navigate(-1)}>
+            ← Back
           </button>
         </div>
       </div>
